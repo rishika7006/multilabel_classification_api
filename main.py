@@ -3,11 +3,10 @@ import math
 
 import torch
 from torch.nn import BCEWithLogitsLoss
-#from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
+from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 from transformers import AdamW, XLNetModel, XLNetLMHeadModel, XLNetConfig
 from transformers import XLNetTokenizerFast
-from keras.preprocessing.sequence import pad_sequences
-
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 import numpy as np
 import pandas as pd
 
@@ -102,10 +101,10 @@ tokenizer = XLNetTokenizerFast.from_pretrained('xlnet-base-cased', do_lower_case
 
 label_cols = ['Problem in recharge', 'Problem in reward/redeem points',
               'Problem in registration/login/username/password', 'Problem with customer care service',
-              'Other complaints', 'Bad comments', 'Appreciation']
+              'Other complaints', 'Bad/Irrelevant comments', 'Appreciation']
 num_labels = len(label_cols)
 
-model_save_path = 'classifier_model1 (1).pt'
+model_save_path = 'PycharmProjects\pythonProject3\classifier_model1 (1).pt'
 device = torch.device('cpu')
 model = XLNetForMultiLabelSequenceClassification(num_labels)
 model.load_state_dict(torch.load(model_save_path, map_location=device))
@@ -147,7 +146,7 @@ st.markdown(html_temp, unsafe_allow_html=True)
 
 # labels
 st.header("Labels to be predicted:")
-c1, c2, c3, c4 = st.beta_columns([0.5,0.5,0.5,0.5])
+c1, c2, c3, c4 = st.beta_columns([0.5, 0.5, 0.5, 0.5])
 c1.button("Problem in recharge")
 with c2:
     st.button("Problem in reward/redeem points")
@@ -161,7 +160,7 @@ with c5:
 with c6:
     st.button("Appreciation")
 with c7:
-    st.button("Bad comments")
+    st.button("Bad/Irrelevant comments")
 
 # input text
 comment = st.text_input("Enter your text ")
@@ -193,8 +192,7 @@ if st.button("Get results"):
     probsList = [item for elem in pred_probs for item in elem]
     THRESHOLD = 0.5
     st.header("Your text is classified as")
-    if probsList[0] < THRESHOLD and probsList[1] < THRESHOLD and probsList[2] < THRESHOLD and probsList[
-        3] < THRESHOLD and probsList[4] < THRESHOLD and probsList[5] < THRESHOLD and probsList[6] < THRESHOLD:
+    if probsList[0] < THRESHOLD and probsList[1] < THRESHOLD and probsList[2] < THRESHOLD and probsList[3] < THRESHOLD and probsList[4] < THRESHOLD and probsList[5] < THRESHOLD and probsList[6] < THRESHOLD:
         st.subheader("Your text does not belong to any category!")
     else:
         for label, prediction in zip(label_cols, probsList):
@@ -203,7 +201,8 @@ if st.button("Get results"):
             st.subheader(f"{label}: {prediction}")
 
 st.sidebar.header("About App")
-st.sidebar.info("A Multi-label intent classification Project which will determine the sentiment and multiple intents of the given text and also predicts the probability of each label.")
+st.sidebar.info(
+    "A Multi-label intent classification Project which will determine the sentiment and multiple intents of the given text and also predicts the probability of each label.")
 st.sidebar.text("Built with Streamlit")
 st.sidebar.header("For Any Queries/Suggestions, Please reach out at :")
 st.sidebar.info("rishikavaish321@gmail.com")
